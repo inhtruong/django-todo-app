@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script src="https://kit.fontawesome.com/4f6aa91745.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <div class="to-do-list">
+        <div class="container d-flex justify-content-center align-items-center p-5">
+            <div class="to-do-list-body position-relative d-flex flex-column bg-white rounded-5">
+                <div class="dots position-absolute overflow-hidden">
+                    <div class="dot"></div>
+                </div>
+                <div class="to-do-list-header"></div>
+                <div class="to-do-list-tasks p-5">
+                    <div class="title text-center">
+                        <h1 class="fw-bold">To-do list</h1>
+                        <p id="tasksInfo" class="fw-bold">
+                            <p id="tasksInfo" class="fw-bold">
+                                {{ analytics.todos_length }} Total, {{ analytics.completed_todos }} Completed, {{ analytics.pending_todos }} Pending
+                            </p>
+                        </p>
+                    </div>
+                    <form method="POST">
+                        <div class="input-group mb-3">
+                            {% csrf_token %}
+                            <input
+                                name="title"
+                                id="taskInput"
+                                type="text"
+                                class="form-control"
+                                placeholder="Add your task ..."
+                                aria-label="Add your task"
+                                aria-describedby="button-addon2"
+                            />
+                            <button class="btn btn-outline-secondary" type="submit" id="addTaskBtn">
+                                <i class="fa-solid fa-pencil"></i>
+                            </button>
+                        </div>
+                    </form>
+                    <table id="taskTable" class="table">
+                        <thead>
+                            <tr>
+                                <th>Num</th>
+                                <th class="w-50">Task</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tasksBody">
+                            {% for item in list %}
+                                <tr>
+                                    <th class="{% if item.status %}wavy{% endif %}">{{item.id}}</th>
+                                    <th class="{% if item.status %}wavy{% endif %}">{{item.title}}</th>
+                                    <th class="task-date d-flex justify-content-center {% if item.status %}wavy{% endif %}"><span>{{item.date|date:"Y-m-d"}}</span></th>
+                                    <th>
+                                        <form id="change{{item.id}}" action="{% url 'change' item.id %}" method="POST">
+                                            {% csrf_token %}
+                                            <i onclick="checked('{{item.id}}')" class="fa-regular fa-square-check {% if item.status %}d-none{% endif %}"></i>
+                                            <i onclick="checked('{{item.id}}')" class="fa-solid fa-square-check {% if not item.status %}d-none{% endif %}"></i>
+                                        </form>
+                                    </th>
+                                    <th>
+                                        <form id="delete{{item.id}}" action="{% url 'del' item.id %}" method="POST">
+                                            {% csrf_token %}
+                                            <i onclick="deleted('{{item.id}}')" class="fa-solid fa-trash-can"></i>
+                                        </form>
+                                        
+                                    </th>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/script.js' %}"></script>
+
+</body>
+
+</html>
